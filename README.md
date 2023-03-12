@@ -31,7 +31,7 @@ InfluxDB - v2.0.9
 Telegraf - v1.19.3
 
 
-## Start Docker-compose
+## Start Docker-compose And Create .ini
 
 ### Directory 
 
@@ -50,6 +50,16 @@ Using my Directory
     └── etc
         └── telegraf.conf
 ```
+
+
+### telegraf conf 생성
+
+docker run --rm telegraf:1.19.3 telegraf config > /app/performance/telegraf/etc/telegraf.conf
+
+### grafana ini 생성
+docker run --rm --entrypoint /bin/sh grafana/grafana:9.2.0 -c "cat /etc/grafana/grafana.ini" > /app/performance/grafana/etc/grafana.ini
+
+### yaml Create 
 
 ``` yml
 version: '3'
@@ -133,3 +143,58 @@ volumes:
 
 ```
 
+``` bash
+$ docker-compose up -d
+```
+
+### Telegraf 설정
+
+- Telegraf 토큰 발급
+ - Telegraf > Setup Instructions > Generate NewToken 
+
+``` bash
+$ docker container exec -it teleraf bash
+
+$ export INFLUX_TOKEN=발급받은토큰
+```
+
+### Grafana 설정
+
+- Grafana DataSource 설정
+ - Plugin > influxDB 등록
+
+### Telegraf 시스템 대시보드 템플릿
+
+- 윈도우 용 템플릿
+  - https://github.com/influxdata/community-templates/tree/master/windows_system
+
+- 리눅스 용 템플릿
+  - https://github.com/influxdata/community-templates/tree/master/linux_system
+  - https://raw.githubusercontent.com/influxdata/community-templates/master/linux_system/linux_system.yml
+
+**주의** grafana에 telegraf 대시보드를 등록할 때 해당 대시보드가 influxdb 2버전 이상의 대시보드를 등록 해야한다.
+
+### influxDB 템플릿
+  
+- https://github.com/influxdata/community-templates/tree/master/apache_jmeter
+
+### grafana 대시보드
+
+- https://grafana.com/grafana/dashboards/17472-jmeter-test-results-influxdb2-standart-backend-listener/
+
+- https://grafana.com/grafana/dashboards/13644-jmeter-load-test-org-md-jmeter-influxdb2-visualizer-influxdb-v2-0-flux/
+  - java 11이상
+
+- https://grafana.com/grafana/dashboards/5496-apache-jmeter-dashboard-by-ubikloadpack/
+
+
+### sitespeedio grafana 대쉬보드 생성
+
+docker run --rm -v "/home/docker/sitespeedio/result:/sitespeed.io" --network host sitespeedio/sitespeed.io:26.1.0 --graphite.host=192.168.151.11 https://www.naver.com --slug test001 --graphite.addSlugToKey true
+
+
+## jmeter 셋팅
+
+Backend Listener 추가 > InfluxDB 정보 입력
+
+![jmeter1.png](image/jmeter1.png)
