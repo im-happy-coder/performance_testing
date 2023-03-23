@@ -23,8 +23,7 @@ InfluxDB와 Grafana를 연결하여 InfluxDB에 저장된 데이터를 Grafana D
 
 - Grafana Load Test Dashboard
 
-![grafana](image/grafana-dashboard1.PNG)
-
+![grafana-result](image/grafana-dashboard2.PNG)
 
 ## Enviroment
 
@@ -206,7 +205,7 @@ Bucket 생성
 
 ### grafana 대시보드
 
-![grafana3](image/grafana-dashboard2.PNG)
+![grafana-dashboard](image/grafana-dashboard1.PNG)
 
 - https://grafana.com/grafana/dashboards/17472-jmeter-test-results-influxdb2-standart-backend-listener/
 
