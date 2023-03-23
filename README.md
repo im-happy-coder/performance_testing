@@ -160,8 +160,23 @@ $ export INFLUX_TOKEN=발급받은토큰
 
 ### Grafana 설정
 
+![grafana1](image/grafana-influxsetup.PNG)
+
+![grafana](image/grafana-dashboard1.PNG)
+
 - Grafana DataSource 설정
  - Plugin > influxDB 등록
+
+
+### influxDB 설정
+
+[!influxdb-bucket](image/influxdb-Bucket1.PNG)
+
+Bucket 생성
+
+생성한 Bucket 토큰 발급
+
+
 
 ### Telegraf 시스템 대시보드 템플릿
 
@@ -180,6 +195,8 @@ $ export INFLUX_TOKEN=발급받은토큰
 
 ### grafana 대시보드
 
+![grafana3](image/grafana-dashboard2.PNG)
+
 - https://grafana.com/grafana/dashboards/17472-jmeter-test-results-influxdb2-standart-backend-listener/
 
 - https://grafana.com/grafana/dashboards/13644-jmeter-load-test-org-md-jmeter-influxdb2-visualizer-influxdb-v2-0-flux/
@@ -194,6 +211,8 @@ docker run --rm -v "/home/docker/sitespeedio/result:/sitespeed.io" --network hos
 
 
 ## jmeter 셋팅
+
+![jmeter1](image/jmeter-sample1.PNG)
 
 Backend Listener 추가 > InfluxDB 정보 입력
 
