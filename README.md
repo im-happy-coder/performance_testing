@@ -14,6 +14,18 @@ InfluxDB와 Grafana를 연결하여 InfluxDB에 저장된 데이터를 Grafana D
 추가로 Sitespeedio를 이용하여 사이트의 성능을 측정하여 테스트하려는 사이트의 js, static, 로딩시간 등 성능을 sitespeedio가 자체적으로 검증하여 해당 결과를 Graphite를 통해 데이터를 수집하고 Grafana Dashboard에서 시각화 할 수있다.
 
 
+### Result
+
+- Jmeter Script
+  
+![jmeter1](image/jmeter-sample1.PNG)
+
+
+- Grafana Load Test Dashboard
+
+![grafana](image/grafana-dashboard1.PNG)
+
+
 ## Enviroment
 
 Linux - CentOS Linux release 7.9.2009 (Core)
@@ -162,7 +174,6 @@ $ export INFLUX_TOKEN=발급받은토큰
 
 ![grafana1](image/grafana-influxsetup.PNG)
 
-![grafana](image/grafana-dashboard1.PNG)
 
 - Grafana DataSource 설정
  - Plugin > influxDB 등록
@@ -170,7 +181,7 @@ $ export INFLUX_TOKEN=발급받은토큰
 
 ### influxDB 설정
 
-[!influxdb-bucket](image/influxdb-Bucket1.PNG)
+![influxdb-bucket](image/influxdb-Bucket1.PNG)
 
 Bucket 생성
 
@@ -210,9 +221,7 @@ Bucket 생성
 docker run --rm -v "/home/docker/sitespeedio/result:/sitespeed.io" --network host sitespeedio/sitespeed.io:26.1.0 --graphite.host=192.168.151.11 https://www.naver.com --slug test001 --graphite.addSlugToKey true
 
 
-## jmeter 셋팅
-
-![jmeter1](image/jmeter-sample1.PNG)
+## jmeter Settings
 
 Backend Listener 추가 > InfluxDB 정보 입력
 
