@@ -1,29 +1,33 @@
 
-# 성능 테스트 환경 구성 및 스크립트 개발
+# Jmeter를 이용한 Application 부하 테스트 및 데이터 시각화
 
-## Performance Diagram
+## Diagram
 
-![performance-diagram](image/performance-dashboard.png)
+![performance-diagram](https://github.com/im-happy-coder/performance_testing/blob/main/img/jmeterAndPerformance.png?raw=true)
 
-### Description
+### Overview
 
-Jmeter를 이용하여 임계테스트, 스파이크 테스트, 스트레스 테스트 등의 각종 테스트 결과와 테스트 동안 발생한 서버 I/O, 네트워크 사용률, 메모리 사용률 등의 모니터링 정보를 InfluxDB에 저장한다.
+Jmeter를 이용하여 Application의 부하테스트 Script를 개발하고 테스트 진행하고,
 
-InfluxDB와 Grafana를 연결하여 InfluxDB에 저장된 데이터를 Grafana DashBoard를 이용하여 시각화 할 수있다.
+테스트 결과를 InfluxDB에 데이터를 저장한다.
 
-추가로 Sitespeedio를 이용하여 사이트의 성능을 측정하여 테스트하려는 사이트의 js, static, 로딩시간 등 성능을 sitespeedio가 자체적으로 검증하여 해당 결과를 Graphite를 통해 데이터를 수집하고 Grafana Dashboard에서 시각화 할 수있다.
+서버자원 모니터링은 Telegraf를 이용하여 I/O, 네트워크 사용률, 메모리 사용률 등의 모니터링 정보를 InfluxDB에 저장한다.
 
+각 데이터 결과를 Grafana와 InfuxDb와 연결하여 시각화한다.
 
-### Result
+추가로 Sitespeedio를 이용하여 사이트의 성능을 측정하여 테스트하려는 사이트의 js, static, 로딩시간 등 성능을 sitespeedio가 자체적으로 검증하여 해당 결과를 Graphite를 통해 데이터를 수집하고 Grafana Dashboard에서 시각화 할 수 있다.
+
+### ResultView
 
 - Jmeter Script
   
-![jmeter1](image/jmeter-sample1.PNG)
+![jmeter1](https://github.com/im-happy-coder/performance_testing/blob/main/img/jmeter-sample1.PNG?raw=true)
+
 
 
 - Grafana Load Test Dashboard
 
-![grafana-result](image/grafana-dashboard2.PNG)
+![grafana-result](https://github.com/im-happy-coder/performance_testing/blob/main/img/grafana-dashboard2.PNG?raw=true)
 
 ## Enviroment
 
@@ -171,7 +175,7 @@ $ export INFLUX_TOKEN=발급받은토큰
 
 ### Grafana 설정
 
-![grafana1](image/grafana-influxsetup.PNG)
+![grafana1](https://github.com/im-happy-coder/performance_testing/blob/main/img/grafana-influxsetup.PNG?raw=true)
 
 
 - Grafana DataSource 설정
@@ -180,7 +184,7 @@ $ export INFLUX_TOKEN=발급받은토큰
 
 ### influxDB 설정
 
-![influxdb-bucket](image/influxdb-Bucket1.PNG)
+![influxdb-bucket](https://github.com/im-happy-coder/performance_testing/blob/main/img/influxdb-Bucket1.PNG?raw=true)
 
 Bucket 생성
 
@@ -205,7 +209,7 @@ Bucket 생성
 
 ### grafana 대시보드
 
-![grafana-dashboard](image/grafana-dashboard1.PNG)
+![grafana-dashboard](https://github.com/im-happy-coder/performance_testing/blob/main/img/grafana-dashboard1.PNG?raw=true)
 
 - https://grafana.com/grafana/dashboards/17472-jmeter-test-results-influxdb2-standart-backend-listener/
 
@@ -224,4 +228,4 @@ docker run --rm -v "/home/docker/sitespeedio/result:/sitespeed.io" --network hos
 
 Backend Listener 추가 > InfluxDB 정보 입력
 
-![jmeter1.png](image/jmeter1.png)
+![jmeter1.png](https://github.com/im-happy-coder/performance_testing/blob/main/img/jmeter1.png?raw=true)
