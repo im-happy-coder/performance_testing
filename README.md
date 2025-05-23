@@ -1,5 +1,5 @@
 
-# Jmeter를 이용한 Application 부하 테스트 및 데이터 시각화
+# Docker 환경에서 어플리케이션 부하 테스트 및 데이터 시각화
 
 ## Diagram
 
