@@ -1,21 +1,40 @@
 
-# Docker 환경에서 어플리케이션 부하 테스트 및 데이터 시각화
+# 웹사이트 성능테스트 및 시각화 시스템 구축
 
 ## Diagram
 
 ![performance-diagram](https://github.com/im-happy-coder/performance_testing/blob/main/img/jmeterAndPerformance.png?raw=true)
 
-### Overview
+### 목적
 
-Jmeter를 이용하여 Application의 부하테스트 Script를 개발하고 테스트 진행하고,
+- K8S HPA 설정, EC2/RDS 타입 선정, 병목 구간 분석을 위해 정확한 성능을 측정하여 판단할 필요가 있다고 생각했습니다
+이에 단순 부하 발생이 아닌, 애플리케이션 도메인별 부하 특성 파악하여 시스템 자원 사용률과 응답 지표의 상관관계 분석을 목표로 성능 테스트 환경을 직접 구성했습니다.
 
-테스트 결과를 InfluxDB에 데이터를 저장한다.
+---
 
-서버자원 모니터링은 Telegraf를 이용하여 I/O, 네트워크 사용률, 메모리 사용률 등의 모니터링 정보를 InfluxDB에 저장한다.
+### 구성 개요
 
-각 데이터 결과를 Grafana와 InfuxDb와 연결하여 시각화한다.
+- JMeter: 도메인별 부하 시나리오 실행
+- Telegraf: CPU, Memory, I/O, Network 자원 수집
+- InfluxDB: 테스트 결과 및 시스템 메트릭 저장
+- Grafana: 응답 시간과 자원 사용률의 상관관계 시각화
+- Sitespeedio: 프론트엔드 로딩 및 리소스 성능 측정
 
-추가로 Sitespeedio를 이용하여 사이트의 성능을 측정하여 테스트하려는 사이트의 js, static, 로딩시간 등 성능을 sitespeedio가 자체적으로 검증하여 해당 결과를 Graphite를 통해 데이터를 수집하고 Grafana Dashboard에서 시각화 할 수 있다.
+---
+
+### 학습을 통해 얻은 점
+
+- 요청 수 증가에 따라 CPU 사용률보다 DB 응답 지연이 먼저 병목이 되는 구간 확인
+- 단순 CPU 기준 HPA 설정은 실제 사용자 응답 지연을 반영하지 못할 수 있음을 체감
+- 성능 테스트 결과를 통해 인프라 리소스 증설보다 쿼리/캐시/아키텍처 개선이 우선일 수 있음을 인지
+
+---
+
+### 실무 관점
+
+- JMeter 기반 부하 테스트 설계
+- RDS 병목 원인 분석
+- Auto Scaling 조건 재정의 등을 판단하는 데 참고 기준으로 활용했습니다.
 
 ### ResultView
 
@@ -24,29 +43,10 @@ Jmeter를 이용하여 Application의 부하테스트 Script를 개발하고 테
 ![jmeter1](https://github.com/im-happy-coder/performance_testing/blob/main/img/jmeter-sample1.PNG?raw=true)
 
 
-
 - Grafana Load Test Dashboard
 
 ![grafana-result](https://github.com/im-happy-coder/performance_testing/blob/main/img/grafana-dashboard2.PNG?raw=true)
 
-## Enviroment
-
-Linux - CentOS Linux release 7.9.2009 (Core)
-
-Docker - Docker version 20.10.22
-
-DockerCompose - Docker Compose version v2.15.1
-
-Grafana - v9.2.0
-
-Sitespeedio - v1.1.10-3
-
-InfluxDB - v2.0.9
-
-Telegraf - v1.19.3
-
-
-## Start Docker-compose And Create .ini
 
 ### Directory 
 
@@ -74,89 +74,6 @@ docker run --rm telegraf:1.19.3 telegraf config > /app/performance/telegraf/etc/
 ### grafana ini 생성
 docker run --rm --entrypoint /bin/sh grafana/grafana:9.2.0 -c "cat /etc/grafana/grafana.ini" > /app/performance/grafana/etc/grafana.ini
 
-### yaml Create 
-
-``` yml
-version: '3'
-services:
-    telegraf:
-      image: telegraf:1.19.3
-      container_name: telegraf
-      depends_on:
-        - influxdb
-      volumes:
-        - /app/performance/telegraf/etc/telegraf.conf:/etc/telegraf/telegraf.conf:ro
-        - /var/run/docker.sock:/var/run/docker.sock
-        - /:/host:ro
-      environment:
-        - HOST_PROC=/host/proc
-        - HOST_MOUNT=/host
-      privileged: true
-      restart: always
-    influxdb:
-      image: influxdb:2.0.9
-      container_name: influxdb2
-      ports:
-        - "8086:8086"
-      volumes:
-        - influxdb:/var/lib/influxdb2
-      network_mode: host
-      restart: always
-    grafana:
-      image: grafana/grafana:9.2.0
-      hostname: grafana
-      depends_on:
-        - influxdb
-        - graphite
-      links:
-        - influxdb
-        - graphite
-      ports:
-        - "3000:3000"
-      environment:
-        - GF_SECURITY_ADMIN_PASSWORD=hdeAga76VG6ga7plZ1
-        - GF_SECURITY_ADMIN_USER=sitespeedio
-        - GF_AUTH_ANONYMOUS_ENABLED=true
-        - GF_USERS_ALLOW_SIGN_UP=false
-        - GF_USERS_ALLOW_ORG_CREATE=false
-        - GF_INSTALL_PLUGINS=grafana-piechart-panel
-      volumes:
-        - /app/performance/grafana/etc/grafana.ini:/etc/grafana/grafana.ini
-        - grafana:/var/lib/grafana
-      restart: always
-    graphite:
-      image: sitespeedio/graphite:1.1.10-3
-      hostname: graphite
-      ports:
-        - "2003:2003"
-        - "8080:8080"
-      restart: always
-      volumes:
-        # In production you should configure/map these to your container
-        # Make sure whisper and graphite.db/grafana.db lives outside your containerr
-        # https://www.sitespeed.io/documentation/sitespeed.io/graphite/#graphite-for-production-important
-        - whisper:/opt/graphite/storage/whisper
-        # Download an empty graphite.db from https://github.com/sitespeedio/sitespeed.io/tree/main/docker/graphite
-        # - /absolute/path/to/graphite/graphite.db:/opt/graphite/storage/graphite.db
-        #
-        # And put the configuration files on your server, configure them as you need
-        # Download from https://github.com/sitespeedio/docker-graphite-statsd/tree/main/conf/graphite
-        # - /absolute/path/to/graphite/conf/storage-schemas.conf:/opt/graphite/conf/storage-schemas.conf
-        # - /absolute/path/to/graphite/conf/storage-aggregation.conf:/opt/graphite/conf/storage-aggregation.conf
-        # - /absolute/path/to/graphite/conf/carbon.conf:/opt/graphite/conf/carbon.conf
-    grafana-setup:
-      image: sitespeedio/grafana-bootstrap:24.5.0
-      links:
-        - grafana
-      environment:
-        - GF_PASSWORD=hdeAga76VG6ga7plZ1
-        - GF_USER=sitespeedio
-volumes:
-    influxdb:
-    grafana:
-    whisper:
-
-```
 
 ``` bash
 $ docker-compose up -d
@@ -189,7 +106,6 @@ $ export INFLUX_TOKEN=발급받은토큰
 Bucket 생성
 
 생성한 Bucket 토큰 발급
-
 
 
 ### Telegraf 시스템 대시보드 템플릿
